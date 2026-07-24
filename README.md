@@ -315,21 +315,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 
 ---
 
-## Author
-
-Utkarsha Avinash
-- GitHub: [github.com/Utkarshaglitched](https://github.com/Utkarshaglitched/)
-- LinkedIn: [linkedin.com/in/utkarsha-avinash-98b984374](https://www.linkedin.com/in/utkarsha-avinash-98b984374)
-- Email: utkarshaavinash@gmail.com
-
----
-
-## Contributing
-
-Contributions are welcome! Please feel free to fork, create feature branches, commit changes, push, and open pull requests.
-
----
-
 ## Additional Resources
 
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
