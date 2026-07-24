@@ -3,28 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Surveillance Dashboard</title>
+  <title>Live Monitoring — intrusion.ai</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="/static/css/style.css" rel="stylesheet" />
 </head>
 <body>
   <div class="dashboard-shell">
     <header class="dashboard-topbar">
-      <h1>Live Monitoring</h1>
-      <nav class="dashboard-nav">
-        <a class="btn btn-sm btn-primary" href="/">Live</a>
-        <a class="btn btn-sm btn-outline-light" href="/logs">Intrusion Logs</a>
-        <a class="btn btn-sm btn-outline-light" href="/settings">Settings</a>
+      <div class="dashboard-brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.5L20 6.5V11.5C20 16.5 16.5 20.5 12 21.5C7.5 20.5 4 16.5 4 11.5V6.5L12 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="brand-text">
+          <span class="brand-logo">intrusion<span>.ai</span></span>
+          <span class="brand-tagline">Perimeter Security</span>
+        </div>
+      </div>
+
+      <nav class="dashboard-nav" aria-label="Dashboard navigation">
+        <a class="nav-item active" href="/" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 10L11 14L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+          Live Feed
+        </a>
+        <a class="nav-item" href="/logs">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Intrusion Logs
+        </a>
+        <a class="nav-item" href="/settings">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Settings
+        </a>
       </nav>
-      <div class="dashboard-stats">
-        <span>Camera: <strong>{{ camera_status }}</strong></span>
-        <span>Today: <strong>{{ intrusions_today }}</strong></span>
-        <span>Status: <strong>{{ system_status }}</strong></span>
+
+      <div class="dashboard-metrics" aria-label="System metrics">
+        <div class="metric">
+          <span class="metric-label">Camera</span>
+          <span class="metric-value">
+            <span class="status-indicator" aria-hidden="true"></span>
+            {{ camera_status }}
+          </span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Intrusions Today</span>
+          <span class="metric-value">{{ intrusions_today }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">System</span>
+          <span class="metric-value">{{ system_status }}</span>
+        </div>
       </div>
     </header>
-    <div class="stream-viewport">
-      <img src="/video_feed" alt="Live video stream" />
-    </div>
+
+    <main class="stream-viewport">
+      <section class="stream-panel" aria-label="Live camera feed">
+        <div class="stream-panel-bar">
+          <div class="stream-panel-title">
+            <span class="panel-label">Primary Feed</span>
+            <span class="panel-desc">Real-time perimeter monitoring</span>
+          </div>
+          <div class="stream-panel-status">
+            <span class="rec-indicator" aria-hidden="true"></span>
+            <span>Recording</span>
+          </div>
+        </div>
+        <div class="stream-frame">
+          <img src="/video_feed" alt="Live video stream" />
+        </div>
+      </section>
+    </main>
   </div>
 </body>
 </html>
