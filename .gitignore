@@ -1,0 +1,21 @@
+# Virtual environments
+.venv/
+.venv-1/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Large local assets
+MODELS/*.pt
+database/*.db
+database/*.sqlite*
+captured_intrusions/*
+numpy-saves/*
+!numpy-saves/.gitkeep
+intrusion_embeddings/*
+#random files
+PROJECT_PIPELINE.md
+# OS/editor files
+.DS_Store
+Thumbs.db
