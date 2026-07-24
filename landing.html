@@ -3,794 +3,711 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Intrusion Detector</title>
+  <title>intrusion.ai — Intelligent Perimeter Security</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0a0d12;
-      --surface:   #111520;
-      --card:      #161b27;
-      --border:    #1e2738;
-      --accent:    #e63946;
-      --accent2:   #457b9d;
-      --green:     #2ec27e;
-      --text:      #e8eaf0;
-      --muted:     #7a8294;
-      --radius:    10px;
+      --bg: #0a0a0f;
+      --bg-card: #111118;
+      --bg-card-hover: #16161f;
+      --border: rgba(255,255,255,0.07);
+      --border-accent: rgba(99,102,241,0.4);
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99,102,241,0.15);
+      --text-primary: #f1f1f5;
+      --text-secondary: #8b8b9e;
+      --text-muted: #52525e;
+      --radius: 12px;
+      --radius-lg: 20px;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      font-size: 16px;
-      line-height: 1.65;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; text-decoration: none; }
-
-    /* ── NAV ── */
+    /* ---- NAV ---- */
     nav {
-      position: sticky; top: 0; z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 6%; height: 64px;
-      background: rgba(10,13,18,0.88);
-      backdrop-filter: blur(12px);
+      padding: 0 40px;
+      height: 64px;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
-
-    .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 1.1rem; font-weight: 700; letter-spacing: .5px;
+    .nav-logo {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text-primary); text-decoration: none;
     }
-
-    .nav-brand svg { flex-shrink: 0; }
-
-    .nav-links { display: flex; gap: 32px; }
-
+    .nav-logo span { color: var(--accent-light); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a {
-      font-size: .9rem; color: var(--muted);
-      transition: color .2s;
+      font-size: 0.875rem; color: var(--text-secondary);
+      text-decoration: none; transition: color 0.2s;
     }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      background: var(--accent); color: #fff;
+      padding: 8px 20px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
 
-    .nav-links a:hover { color: var(--text); }
-
-    /* ── HERO ── */
+    /* ---- HERO ---- */
     .hero {
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; padding: 110px 6% 90px;
-      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(230,57,70,.18) 0%, transparent 65%);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative; overflow: hidden;
     }
-
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 5px 14px; border-radius: 99px;
-      border: 1px solid rgba(230,57,70,.4);
-      background: rgba(230,57,70,.08);
-      font-size: .78rem; letter-spacing: .8px; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 28px;
+    #light-rays-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
     }
-
-    .badge span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.6s infinite; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: .3; }
+    .hero-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center;
     }
-
-    h1 {
-      font-size: clamp(2.4rem, 5.5vw, 4rem);
-      font-weight: 800; line-height: 1.15; letter-spacing: -.5px;
-      max-width: 780px;
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700; letter-spacing: -0.04em;
+      line-height: 1.1; max-width: 760px;
+      margin-bottom: 24px;
     }
-
-    h1 em { color: var(--accent); font-style: normal; }
-
-    .hero-sub {
-      margin-top: 22px; max-width: 580px;
-      font-size: 1.1rem; color: var(--muted);
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent-light), #a5b4fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
-    .hero-cta {
-      display: flex; gap: 14px; margin-top: 40px;
-      flex-wrap: wrap; justify-content: center;
+    .hero p {
+      font-size: 1.1rem; color: var(--text-secondary);
+      max-width: 520px; margin-bottom: 40px; font-weight: 400;
     }
-
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 28px; border-radius: var(--radius);
-      font-size: .95rem; font-weight: 600; cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-    }
-
-    .btn:hover { transform: translateY(-2px); }
-
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
       background: var(--accent); color: #fff;
-      box-shadow: 0 4px 24px rgba(230,57,70,.35);
+      padding: 13px 28px; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 600;
+      text-decoration: none; transition: all 0.2s;
     }
-
-    .btn-primary:hover { box-shadow: 0 6px 32px rgba(230,57,70,.5); }
-
-    .btn-ghost {
-      border: 1px solid var(--border); color: var(--text);
-      background: transparent;
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent; color: var(--text-primary);
+      padding: 13px 28px; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 500;
+      text-decoration: none; border: 1px solid var(--border);
+      transition: all 0.2s;
     }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
 
-    .btn-ghost:hover { border-color: var(--muted); }
-
-    /* ── STAT STRIP ── */
-    .stats {
-      display: flex; justify-content: center; flex-wrap: wrap;
-      gap: 0; border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .stat {
-      flex: 1 1 180px; padding: 28px 24px; text-align: center;
-      border-right: 1px solid var(--border);
-    }
-
-    .stat:last-child { border-right: none; }
-
-    .stat-num {
-      font-size: 2rem; font-weight: 800; color: var(--accent);
-    }
-
-    .stat-label { font-size: .82rem; color: var(--muted); margin-top: 4px; }
-
-    /* ── SECTIONS ── */
-    section { padding: 90px 6%; }
-
+    /* ---- SECTIONS SHARED ---- */
+    section { padding: 96px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
     .section-label {
-      font-size: .75rem; letter-spacing: 1.4px; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 12px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent-light);
+      margin-bottom: 16px; text-align: center;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700;
+      letter-spacing: -0.03em; text-align: center;
+      color: var(--text-primary); margin-bottom: 16px;
+    }
+    .section-subtitle {
+      font-size: 1rem; color: var(--text-secondary);
+      text-align: center; max-width: 520px;
+      margin: 0 auto 64px;
     }
 
-    h2 {
-      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-      font-weight: 700; line-height: 1.25; max-width: 560px;
-    }
-
-    h2 + p { margin-top: 16px; color: var(--muted); max-width: 540px; }
-
-    /* ── FEATURE GRID ── */
-    .features { background: var(--surface); }
-
-    .feat-header { text-align: center; margin-bottom: 60px; }
-    .feat-header h2, .feat-header p { max-width: 100%; margin-inline: auto; }
-
-    .feat-grid {
+    /* ---- FEATURES ---- */
+    #features { background: var(--bg); }
+    .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px; max-width: 1100px; margin-inline: auto;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
     }
-
-    .feat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 28px;
-      transition: border-color .2s, transform .2s;
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
     }
-
-    .feat-card:hover {
-      border-color: rgba(230,57,70,.45);
+    .feature-card:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
       transform: translateY(-3px);
     }
-
-    .feat-icon {
+    .feature-icon {
       width: 44px; height: 44px; border-radius: 10px;
-      background: rgba(230,57,70,.1); display: flex;
-      align-items: center; justify-content: center; margin-bottom: 18px;
+      background: var(--accent-glow); border: 1px solid var(--border-accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
     }
+    .feature-icon svg { width: 20px; height: 20px; stroke: var(--accent-light); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .feature-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
 
-    .feat-icon.blue { background: rgba(69,123,157,.12); }
-    .feat-icon.green { background: rgba(46,194,126,.12); }
-
-    .feat-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-    .feat-card p  { font-size: .9rem; color: var(--muted); }
-
-    /* ── HOW IT WORKS ── */
-    .how { max-width: 900px; margin-inline: auto; }
-
-    .pipeline {
-      display: flex; flex-direction: column; gap: 0;
-      margin-top: 50px; position: relative;
-    }
-
-    .pipeline::before {
-      content: '';
-      position: absolute; left: 21px; top: 0; bottom: 0;
-      width: 2px; background: var(--border);
-    }
-
+    /* ---- HOW IT WORKS ---- */
+    #how-it-works { background: var(--bg); }
+    .steps { display: flex; flex-direction: column; gap: 0; max-width: 720px; margin: 0 auto; }
     .step {
-      display: flex; gap: 24px; align-items: flex-start;
-      padding: 20px 0;
+      display: grid; grid-template-columns: 56px 1fr;
+      gap: 24px; position: relative; padding-bottom: 48px;
     }
-
-    .step-num {
-      flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
-      background: var(--card); border: 2px solid var(--border);
+    .step:last-child { padding-bottom: 0; }
+    .step-left { display: flex; flex-direction: column; align-items: center; }
+    .step-number {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-accent);
       display: flex; align-items: center; justify-content: center;
-      font-size: .85rem; font-weight: 800; color: var(--accent);
-      position: relative; z-index: 1;
+      font-size: 0.85rem; font-weight: 700; color: var(--accent-light);
+      flex-shrink: 0; z-index: 1;
     }
-
-    .step-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
-    .step-body p  { font-size: .88rem; color: var(--muted); }
-
-    /* ── TECH STACK ── */
-    .tech { background: var(--surface); }
-
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px; max-width: 1000px; margin: 50px auto 0;
+    .step-line {
+      flex: 1; width: 1px; background: linear-gradient(to bottom, var(--border-accent), transparent);
+      margin-top: 8px;
     }
+    .step:last-child .step-line { display: none; }
+    .step-content { padding-top: 10px; }
+    .step-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .step-content p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
 
-    .tech-item {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px 22px;
-      display: flex; align-items: center; gap: 14px;
-      transition: border-color .2s;
+    /* ---- STATS ---- */
+    #stats { background: var(--bg); padding: 60px 24px; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden;
     }
-
-    .tech-item:hover { border-color: var(--accent2); }
-
-    .tech-icon {
-      width: 38px; height: 38px; flex-shrink: 0;
-      border-radius: 8px; background: rgba(69,123,157,.12);
-      display: flex; align-items: center; justify-content: center;
+    .stat-item {
+      background: var(--bg-card); padding: 40px 32px; text-align: center;
     }
-
-    .tech-item-name { font-size: .95rem; font-weight: 700; }
-    .tech-item-role { font-size: .78rem; color: var(--muted); }
-
-    /* ── API SECTION ── */
-    .api-table-wrap { margin-top: 40px; overflow-x: auto; }
-
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: .88rem;
+    .stat-value {
+      font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em;
+      color: var(--text-primary); line-height: 1;
+      margin-bottom: 8px;
     }
+    .stat-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 400; }
 
-    th {
-      text-align: left; padding: 12px 16px;
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      color: var(--muted); font-weight: 600; font-size: .78rem;
-      text-transform: uppercase; letter-spacing: .8px;
+    /* ---- USE CASES ---- */
+    #use-cases { background: var(--bg); }
+    .use-cases-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
     }
-
-    td {
-      padding: 13px 16px; border-bottom: 1px solid var(--border);
-      vertical-align: top;
+    .use-case-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px 24px;
+      transition: border-color 0.25s, transform 0.25s;
     }
-
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,.02); }
-
-    .method {
-      display: inline-block; padding: 2px 9px; border-radius: 4px;
-      font-size: .75rem; font-weight: 700; letter-spacing: .4px;
+    .use-case-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+    .use-case-tag {
+      display: inline-block; padding: 4px 10px;
+      background: rgba(99,102,241,0.08); border: 1px solid var(--border-accent);
+      border-radius: 100px; font-size: 0.7rem; font-weight: 600;
+      color: var(--accent-light); letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 14px;
     }
+    .use-case-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
+    .use-case-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
 
-    .get  { background: rgba(46,194,126,.12);  color: var(--green); }
-    .post { background: rgba(69,123,157,.15);  color: #74b8d8; }
-    .del  { background: rgba(230,57,70,.12);   color: var(--accent); }
-
-    code {
-      font-family: 'Cascadia Code', 'Consolas', monospace;
-      font-size: .83em; background: rgba(255,255,255,.07);
-      padding: 2px 7px; border-radius: 4px;
+    /* ---- CTA ---- */
+    #cta { padding: 96px 24px; background: var(--bg); }
+    .cta-box {
+      max-width: 700px; margin: 0 auto; text-align: center;
+      background: var(--bg-card); border: 1px solid var(--border-accent);
+      border-radius: 24px; padding: 64px 48px;
     }
+    .cta-box h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700;
+      letter-spacing: -0.03em; margin-bottom: 16px;
+    }
+    .cta-box p { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 36px; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
-    /* ── FOOTER ── */
+    /* ---- FOOTER ---- */
     footer {
-      background: var(--surface);
+      padding: 32px 40px;
       border-top: 1px solid var(--border);
-      padding: 50px 6% 36px;
-      display: flex; flex-wrap: wrap; gap: 32px;
-      align-items: flex-start; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .footer-logo span { color: var(--accent-light); }
+    footer p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ---- DIVIDER ---- */
+    .section-divider {
+      height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent);
+      max-width: 1100px; margin: 0 auto;
     }
 
-    .footer-brand { max-width: 320px; }
-    .footer-brand .nav-brand { margin-bottom: 12px; }
-    .footer-brand p { font-size: .88rem; color: var(--muted); }
-
-    .footer-links h4 { font-size: .85rem; font-weight: 700; margin-bottom: 14px; }
-    .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .footer-links li a { font-size: .85rem; color: var(--muted); transition: color .2s; }
-    .footer-links li a:hover { color: var(--text); }
-
-    .footer-bottom {
-      width: 100%; padding-top: 24px;
-      border-top: 1px solid var(--border);
-      font-size: .8rem; color: var(--muted);
-      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    /* ---- ANIMATIONS ---- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
     }
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
       .nav-links { display: none; }
-      .stats { flex-direction: column; }
-      .stat { border-right: none; border-bottom: 1px solid var(--border); }
-      .stat:last-child { border-bottom: none; }
-      footer { flex-direction: column; }
+      .cta-box { padding: 40px 24px; }
+      footer { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-brand">
-    <!-- shield icon -->
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-    Intrusion Detector
-  </div>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#how">How It Works</a>
-    <a href="#tech">Tech Stack</a>
-    <a href="#api">API</a>
-    <a href="https://github.com/KaunAnkit/intrustion_detector" target="_blank" rel="noopener">GitHub</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="badge">
-    <span></span>
-    Live Detection
-  </div>
-  <h1>Real-Time AI-Powered<br /><em>Intrusion Detection</em></h1>
-  <p class="hero-sub">
-    Monitor any space with custom perimeter boundaries, YOLO11 person detection,
-    face recognition, and a full intrusion log dashboard — all running locally in your browser.
-  </p>
-  <div class="hero-cta">
-    <a href="https://github.com/KaunAnkit/intrustion_detector" target="_blank" rel="noopener" class="btn btn-primary">
-      <!-- github icon -->
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.3 9.4 7.9 10.9.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.52-2.55-.29-5.24-1.27-5.24-5.67 0-1.25.45-2.27 1.18-3.07-.12-.3-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.17a10.9 10.9 0 0 1 5.74 0c2.19-1.48 3.14-1.17 3.14-1.17.63 1.58.24 2.74.12 3.04.74.8 1.18 1.82 1.18 3.07 0 4.41-2.7 5.38-5.27 5.66.41.36.78 1.07.78 2.15v3.19c0 .31.21.67.8.56C20.71 21.4 24 17.1 24 12c0-6.35-5.15-11.5-12-11.5z"/>
-      </svg>
-      View on GitHub
-    </a>
-    <a href="#how" class="btn btn-ghost">
-      <!-- play icon -->
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polygon points="10 8 16 12 10 16 10 8"/>
-      </svg>
-      See How It Works
-    </a>
-  </div>
-</section>
-
-<!-- STAT STRIP -->
-<div class="stats">
-  <div class="stat">
-    <div class="stat-num">10 FPS</div>
-    <div class="stat-label">Analysis Rate</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">0.1s</div>
-    <div class="stat-label">Detection Interval</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">1s</div>
-    <div class="stat-label">Intrusion Confirmation</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">55%</div>
-    <div class="stat-label">Face Match Threshold</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">30 FPS</div>
-    <div class="stat-label">Live Stream Output</div>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="feat-header">
-    <div class="section-label">Features</div>
-    <h2>Everything you need for perimeter security</h2>
-    <p>A self-hosted surveillance stack combining computer vision, AI, and a browser dashboard.</p>
-  </div>
-  <div class="feat-grid">
-
-    <div class="feat-card">
-      <div class="feat-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/>
-          <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
-          <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-        </svg>
-      </div>
-      <h3>Real-Time Person Detection</h3>
-      <p>YOLO11x model detects people in every live camera frame with a configurable confidence threshold (default 50%).</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 17 9 11 13 15 21 7"/><line x1="14" y1="7" x2="21" y2="7"/><line x1="21" y1="7" x2="21" y2="14"/>
-        </svg>
-      </div>
-      <h3>Custom Perimeter Drawing</h3>
-      <p>Draw a freeform boundary line directly over the live video stream. Choose which side is the danger zone — left or right.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-      </div>
-      <h3>Intrusion Confirmation</h3>
-      <p>A person must stay in the danger zone for at least 1 second before an intrusion is confirmed, eliminating false positives.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon blue">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-        </svg>
-      </div>
-      <h3>Automatic Image Capture</h3>
-      <p>On confirmed intrusion, a cropped image of the intruder is saved instantly to disk with a timestamped filename.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon blue">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-      </div>
-      <h3>Face Recognition</h3>
-      <p>InsightFace buffalo_l extracts face embeddings. Cosine similarity matching identifies known individuals from your enrolled library.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon green">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2ec27e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/>
-          <line x1="9" y1="21" x2="9" y2="9"/>
-        </svg>
-      </div>
-      <h3>Live MJPEG Dashboard</h3>
-      <p>Browser-based dashboard streams live video with bounding-box overlays and perimeter visualization at up to 30 FPS.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon green">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2ec27e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-        </svg>
-      </div>
-      <h3>Intrusion Log with Search</h3>
-      <p>Every event is stored in SQLite with timestamp, capture, and recognition result. Search and filter by name, date, or status.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon green">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2ec27e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-        </svg>
-      </div>
-      <h3>Webhook Alarm Integration</h3>
-      <p>Sends a POST request to a configurable alarm URL on every confirmed intrusion for external integrations and hardware triggers.</p>
-    </div>
-
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="how">
-    <div class="section-label">Pipeline</div>
-    <h2>How It Works</h2>
-    <p>From raw camera frames to identified intruder in under a second.</p>
-
-    <div class="pipeline">
-
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h3>Camera Capture</h3>
-          <p>A dedicated daemon thread reads webcam frames at ~100 FPS via OpenCV and stores the latest frame in a thread-safe buffer.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h3>YOLO11 Person Detection</h3>
-          <p>Every 0.1 seconds, the analysis thread runs YOLO11x inference on the latest frame and extracts bounding boxes for all detected people above the confidence threshold.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h3>Foot-Point Perimeter Check</h3>
-          <p>The foot point (center-bottom of each bounding box) is tested against the user-defined polyline boundary. Points are normalized (0-1) for resolution independence.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <h3>Track Management and Confirmation</h3>
-          <p>People are tracked across frames using Manhattan-distance matching. A person must remain in the danger zone for 1 continuous second before the intrusion is confirmed, preventing false alerts.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          <h3>Capture and Embed</h3>
-          <p>On confirmation, the intruder's crop is saved as a JPEG. InsightFace extracts a 512-d face embedding and stores it as a <code>.npy</code> file alongside the image.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">6</div>
-        <div class="step-body">
-          <h3>Lazy Face Recognition</h3>
-          <p>When you open the logs page, stored embeddings are compared against your enrolled face library using cosine similarity. Results above 55% are named; others are marked Unknown. Results are cached in SQLite.</p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">7</div>
-        <div class="step-body">
-          <h3>Alarm and Dashboard Update</h3>
-          <p>The dashboard status switches to INTRUSION. An optional webhook POST is sent to any configured alarm endpoint for hardware or third-party integrations.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- TECH STACK -->
-<section class="tech" id="tech">
-  <div class="section-label">Technology</div>
-  <h2>Built on proven open-source tools</h2>
-  <p>Every component is chosen for performance, reliability, and ease of deployment.</p>
-
-  <div class="tech-grid">
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">FastAPI</div>
-        <div class="tech-item-role">API server and web UI</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">YOLO11x</div>
-        <div class="tech-item-role">Person detection</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">InsightFace</div>
-        <div class="tech-item-role">Face recognition</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">OpenCV</div>
-        <div class="tech-item-role">Camera capture and MJPEG stream</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">SQLite + SQLAlchemy</div>
-        <div class="tech-item-role">Intrusion log persistence</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">NumPy</div>
-        <div class="tech-item-role">Embedding storage and cosine similarity</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">Uvicorn</div>
-        <div class="tech-item-role">ASGI server</div>
-      </div>
-    </div>
-
-    <div class="tech-item">
-      <div class="tech-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#74b8d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="tech-item-name">Jinja2 Templates</div>
-        <div class="tech-item-role">Server-side HTML rendering</div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- API REFERENCE -->
-<section id="api">
-  <div class="section-label">API Reference</div>
-  <h2>REST endpoints</h2>
-  <p>All routes are served by the local FastAPI instance at <code>http://localhost:8000</code>.</p>
-
-  <div class="api-table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Method</th>
-          <th>Endpoint</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/</code></td>
-          <td>Main dashboard — live feed, status, intrusions today</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/settings</code></td>
-          <td>Settings page — draw and save the perimeter boundary</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/logs</code></td>
-          <td>Intrusion log page with search and filter controls</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/video_feed</code></td>
-          <td>MJPEG stream with overlay and perimeter visualization</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/api/settings/frame</code></td>
-          <td>Single JPEG snapshot of the current camera frame</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/api/perimeter</code></td>
-          <td>Return saved perimeter points and danger side</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><code>/api/perimeter</code></td>
-          <td>Save a new perimeter (JSON body: <code>points[]</code>, <code>danger_side</code>)</td>
-        </tr>
-        <tr>
-          <td><span class="method del">DELETE</span></td>
-          <td><code>/api/perimeter</code></td>
-          <td>Clear the saved perimeter and revert to default</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/api/logs</code></td>
-          <td>JSON list of intrusion logs (supports <code>query</code>, <code>filter</code>, <code>sort</code> params)</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/captures/{image}</code></td>
-          <td>Serve a captured intruder image by filename</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><code>/intrusion/status</code></td>
-          <td>Current intrusion status value and timestamp</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><code>/intrusion/status</code></td>
-          <td>Update intrusion status from an external alarm board</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-brand">
-    <div class="nav-brand">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-      Intrusion Detector
-    </div>
-    <p>A self-hosted, open-source surveillance system powered by YOLO11 and InsightFace. Runs entirely on your own hardware.</p>
-  </div>
-
-  <div class="footer-links">
-    <h4>Project</h4>
-    <ul>
-      <li><a href="https://github.com/KaunAnkit/intrustion_detector" target="_blank" rel="noopener">Source Code</a></li>
-      <li><a href="https://github.com/KaunAnkit/intrustion_detector/issues" target="_blank" rel="noopener">Issues</a></li>
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">intrusion<span>.ai</span></a>
+    <ul class="nav-links">
       <li><a href="#features">Features</a></li>
-      <li><a href="#api">API Docs</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#use-cases">Use cases</a></li>
     </ul>
-  </div>
+    <a href="http://127.0.0.1:5600/" class="nav-cta" target="_blank" rel="noopener">Open Dashboard</a>
+  </nav>
 
-  <div class="footer-links">
-    <h4>Stack</h4>
-    <ul>
-      <li><a href="https://fastapi.tiangolo.com" target="_blank" rel="noopener">FastAPI</a></li>
-      <li><a href="https://ultralytics.com" target="_blank" rel="noopener">Ultralytics YOLO</a></li>
-      <li><a href="https://github.com/deepinsight/insightface" target="_blank" rel="noopener">InsightFace</a></li>
-      <li><a href="https://opencv.org" target="_blank" rel="noopener">OpenCV</a></li>
-    </ul>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <canvas id="light-rays-canvas"></canvas>
+    <div class="hero-content">
+      <h1>Security that sees <span>before you do</span></h1>
+      <p>intrusion.ai uses computer vision to monitor perimeters, detect intrusions, and identify individuals the moment they cross your boundary line.</p>
+      <div class="hero-actions">
+        <a href="http://127.0.0.1:5600/" class="btn-primary" target="_blank" rel="noopener">View Live Demo</a>
+        <a href="#features" class="btn-secondary">Explore features</a>
+      </div>
+    </div>
+  </section>
 
-  <div class="footer-bottom">
-    <span>Intrusion Detector — open source under MIT License</span>
-    <span>Built with FastAPI, YOLO11, InsightFace, OpenCV</span>
-  </div>
-</footer>
+  <div class="section-divider"></div>
 
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label fade-up">Core capabilities</p>
+      <h2 class="section-title fade-up">Everything you need to secure a perimeter</h2>
+      <p class="section-subtitle fade-up">Built on YOLO-based object detection and InsightFace embeddings, intrusion.ai delivers sub-second response times without cloud dependency.</p>
+
+      <div class="features-grid">
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Configurable Perimeter Line</h3>
+          <p>Draw a custom boundary line directly on the camera feed. Define which side is the danger zone and let the system do the rest.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <h3>Real-time Intrusion Detection</h3>
+          <p>Frames are analysed at 10Hz using YOLOv11. When a person crosses the boundary, an alert fires in under 100ms with a timestamped image capture.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <h3>Face Recognition</h3>
+          <p>Register known faces once. intrusion.ai matches intruders against your database using cosine similarity on ArcFace embeddings.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <h3>Intrusion Log Dashboard</h3>
+          <p>Search, filter, and review every recorded event. Each log entry includes the capture image, timestamp, and recognized identity.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+          <h3>Webhook Alarm Integration</h3>
+          <p>Push intrusion status to any external alarm board or automation system via configurable webhook. Works with any HTTP endpoint.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M22 12h-4M6 12H2M12 2v4M12 18v4M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83M19.07 19.07l-2.83-2.83M7.76 7.76L4.93 4.93"/></svg>
+          </div>
+          <h3>Runs Fully On-Device</h3>
+          <p>No cloud required. All inference happens locally, keeping your camera feed private and latency low regardless of network conditions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works">
+    <div class="container">
+      <p class="section-label fade-up">Setup in minutes</p>
+      <h2 class="section-title fade-up">How intrusion.ai works</h2>
+      <p class="section-subtitle fade-up">From camera feed to identified intruder in four straightforward steps.</p>
+
+      <div class="steps">
+        <div class="step fade-up">
+          <div class="step-left">
+            <div class="step-number">01</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Connect your camera</h3>
+            <p>Point intrusion.ai at any USB or IP camera. The live feed streams directly to the dashboard over a local network — nothing leaves your environment.</p>
+          </div>
+        </div>
+
+        <div class="step fade-up">
+          <div class="step-left">
+            <div class="step-number">02</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Draw your boundary</h3>
+            <p>Use the interactive perimeter editor to place a line anywhere on the frame. Choose which side is restricted. The system immediately begins enforcing it.</p>
+          </div>
+        </div>
+
+        <div class="step fade-up">
+          <div class="step-left">
+            <div class="step-number">03</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Register known faces</h3>
+            <p>Upload photos of authorized personnel. intrusion.ai generates face embeddings that persist across sessions and never require retraining.</p>
+          </div>
+        </div>
+
+        <div class="step fade-up">
+          <div class="step-left">
+            <div class="step-number">04</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <h3>Monitor and respond</h3>
+            <p>Every boundary crossing is logged, photographed, and optionally forwarded to your alarm or notification system. Review, search, and export logs at any time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="container">
+      <div class="stats-grid fade-up">
+        <div class="stat-item">
+          <div class="stat-value">100ms</div>
+          <div class="stat-label">Intrusion alert latency</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">On-device, no cloud</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">YOLOv11</div>
+          <div class="stat-label">Detection backbone</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- USE CASES -->
+  <section id="use-cases">
+    <div class="container">
+      <p class="section-label fade-up">Deployment scenarios</p>
+      <h2 class="section-title fade-up">Built for environments that cannot afford blind spots</h2>
+      <p class="section-subtitle fade-up">Whether it is a server room, warehouse, or research lab, intrusion.ai adapts to the space.</p>
+
+      <div class="use-cases-grid">
+        <div class="use-case-card fade-up">
+          <span class="use-case-tag">Facilities</span>
+          <h3>Restricted Area Access</h3>
+          <p>Monitor entry points to server rooms, labs, and storage vaults. Automatically log every unauthorized crossing with face capture.</p>
+        </div>
+
+        <div class="use-case-card fade-up">
+          <span class="use-case-tag">Industrial</span>
+          <h3>Warehouse Safety Zones</h3>
+          <p>Define safety perimeters around heavy machinery or hazardous zones. Trigger external alarms when workers enter a danger side.</p>
+        </div>
+
+        <div class="use-case-card fade-up">
+          <span class="use-case-tag">Research</span>
+          <h3>Lab & Campus Security</h3>
+          <p>Track who enters sensitive research areas. Match visitors against a roster of known staff and flag unrecognized individuals in real time.</p>
+        </div>
+
+        <div class="use-case-card fade-up">
+          <span class="use-case-tag">Residential</span>
+          <h3>Property Perimeter Monitoring</h3>
+          <p>Deploy at entry gates or driveways. Know exactly when someone crosses onto your property and who they are before you open the door.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container">
+      <div class="cta-box fade-up">
+        <h2>See it working right now</h2>
+        <p>The live dashboard is running locally. Open it to configure your perimeter, browse intrusion logs, and watch the feed in real time.</p>
+        <div class="cta-actions">
+          <a href="http://127.0.0.1:5600/" class="btn-primary" target="_blank" rel="noopener">Open Live Dashboard</a>
+          <a href="#features" class="btn-secondary">Review features</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">intrusion<span>.ai</span></span>
+    <p>Intelligent perimeter security, fully on-device.</p>
+  </footer>
+
+  <!-- JS -->
+  <script type="module">
+    import { Renderer, Program, Triangle, Mesh } from 'https://esm.sh/ogl@1.0.11';
+
+    // ── LightRays ──────────────────────────────────────────────────────────────
+    const hexToRgb = hex => {
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return m
+        ? [parseInt(m[1],16)/255, parseInt(m[2],16)/255, parseInt(m[3],16)/255]
+        : [1,1,1];
+    };
+
+    const vert = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() {
+  vUv = position * 0.5 + 0.5;
+  gl_Position = vec4(position, 0.0, 1.0);
+}`;
+
+    const frag = `precision highp float;
+uniform float iTime;
+uniform vec2  iResolution;
+uniform vec2  rayPos;
+uniform vec2  rayDir;
+uniform vec3  raysColor;
+uniform float raysSpeed;
+uniform float lightSpread;
+uniform float rayLength;
+uniform float fadeDistance;
+uniform float saturation;
+uniform vec2  mousePos;
+uniform float mouseInfluence;
+uniform float noiseAmount;
+uniform float distortion;
+varying vec2 vUv;
+
+float noise(vec2 st) {
+  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+float rayStrength(vec2 raySource, vec2 rayRefDirection, vec2 coord,
+                  float seedA, float seedB, float speed) {
+  vec2  sourceToCoord = coord - raySource;
+  vec2  dirNorm       = normalize(sourceToCoord);
+  float cosAngle      = dot(dirNorm, rayRefDirection);
+  float distorted     = cosAngle + distortion * sin(iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
+  float spreadFactor  = pow(max(distorted, 0.0), 1.0 / max(lightSpread, 0.001));
+  float distance      = length(sourceToCoord);
+  float maxDist       = iResolution.x * rayLength;
+  float lenFalloff    = clamp((maxDist - distance) / maxDist, 0.0, 1.0);
+  float fadeFalloff   = clamp((iResolution.x * fadeDistance - distance) / (iResolution.x * fadeDistance), 0.5, 1.0);
+  float base = clamp(
+    (0.45 + 0.15 * sin(distorted * seedA + iTime * speed)) +
+    (0.30 + 0.20 * cos(-distorted * seedB + iTime * speed)),
+    0.0, 1.0);
+  return base * lenFalloff * fadeFalloff * spreadFactor;
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+  vec2 coord = vec2(fragCoord.x, iResolution.y - fragCoord.y);
+  vec2 finalRayDir = rayDir;
+  if (mouseInfluence > 0.0) {
+    vec2 mScreen = mousePos * iResolution.xy;
+    finalRayDir  = normalize(mix(rayDir, normalize(mScreen - rayPos), mouseInfluence));
+  }
+  vec4 rays1 = vec4(1.0) * rayStrength(rayPos, finalRayDir, coord, 36.2214, 21.11349, 1.5 * raysSpeed);
+  vec4 rays2 = vec4(1.0) * rayStrength(rayPos, finalRayDir, coord, 22.3991, 18.0234,  1.1 * raysSpeed);
+  fragColor   = rays1 * 0.5 + rays2 * 0.4;
+  if (noiseAmount > 0.0) {
+    float n = noise(coord * 0.01 + iTime * 0.1);
+    fragColor.rgb *= (1.0 - noiseAmount + noiseAmount * n);
+  }
+  float brightness = 1.0 - (coord.y / iResolution.y);
+  fragColor.x *= 0.1 + brightness * 0.8;
+  fragColor.y *= 0.3 + brightness * 0.6;
+  fragColor.z *= 0.5 + brightness * 0.5;
+  if (saturation != 1.0) {
+    float gray = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
+    fragColor.rgb = mix(vec3(gray), fragColor.rgb, saturation);
+  }
+  fragColor.rgb *= raysColor;
+}
+
+void main() {
+  vec4 color;
+  mainImage(color, gl_FragCoord.xy);
+  gl_FragColor = color;
+}`;
+
+    function initLightRays() {
+      const canvas = document.getElementById('light-rays-canvas');
+      if (!canvas) return;
+
+      const renderer = new Renderer({
+        canvas,
+        dpr:   Math.min(window.devicePixelRatio, 2),
+        alpha: true,
+      });
+      const gl = renderer.gl;
+
+      // Config
+      const COLOR          = '#6366f1';
+      const SPEED          = 1.2;
+      const SPREAD         = 0.6;
+      const RAY_LENGTH     = 1.4;
+      const FADE_DISTANCE  = 1.0;
+      const SATURATION     = 1.0;
+      const MOUSE_INFLUENCE= 0.08;
+      const NOISE_AMOUNT   = 0.05;
+      const DISTORTION     = 0.03;
+
+      const uniforms = {
+        iTime:          { value: 0 },
+        iResolution:    { value: [1, 1] },
+        rayPos:         { value: [0, 0] },
+        rayDir:         { value: [0, 1] },
+        raysColor:      { value: hexToRgb(COLOR) },
+        raysSpeed:      { value: SPEED },
+        lightSpread:    { value: SPREAD },
+        rayLength:      { value: RAY_LENGTH },
+        fadeDistance:   { value: FADE_DISTANCE },
+        saturation:     { value: SATURATION },
+        mousePos:       { value: [0.5, 0.5] },
+        mouseInfluence: { value: MOUSE_INFLUENCE },
+        noiseAmount:    { value: NOISE_AMOUNT },
+        distortion:     { value: DISTORTION },
+      };
+
+      const geometry = new Triangle(gl);
+      const program  = new Program(gl, { vertex: vert, fragment: frag, uniforms });
+      const mesh     = new Mesh(gl, { geometry, program });
+
+      const mouse       = { x: 0.5, y: 0.5 };
+      const smoothMouse = { x: 0.5, y: 0.5 };
+
+      function resize() {
+        const hero = canvas.parentElement;
+        const w    = hero.clientWidth;
+        const h    = hero.clientHeight;
+        renderer.setSize(w, h);
+        const dpr = renderer.dpr;
+        uniforms.iResolution.value = [w * dpr, h * dpr];
+        // top-center origin, slightly above the frame
+        uniforms.rayPos.value = [w * dpr * 0.5, -0.2 * h * dpr];
+        uniforms.rayDir.value = [0, 1];
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+
+      window.addEventListener('mousemove', e => {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        mouse.x = (e.clientX - rect.left) / rect.width;
+        mouse.y = (e.clientY - rect.top)  / rect.height;
+      }, { passive: true });
+
+      let rafId;
+      function loop(t) {
+        uniforms.iTime.value = t * 0.001;
+        smoothMouse.x = smoothMouse.x * 0.92 + mouse.x * 0.08;
+        smoothMouse.y = smoothMouse.y * 0.92 + mouse.y * 0.08;
+        uniforms.mousePos.value = [smoothMouse.x, smoothMouse.y];
+        renderer.render({ scene: mesh });
+        rafId = requestAnimationFrame(loop);
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+
+    initLightRays();
+
+    // ── Fade-up scroll animations ──────────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const siblings = entry.target.parentElement.querySelectorAll('.fade-up');
+          let delay = 0;
+          siblings.forEach(el => {
+            if (!el.classList.contains('visible')) {
+              el.style.transitionDelay = delay + 'ms';
+              el.classList.add('visible');
+              delay += 80;
+            }
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Nav scroll highlight ───────────────────────────────────────────────────
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current
+          ? 'var(--text-primary)' : '';
+      });
+    }, { passive: true });
+  </script>
 </body>
 </html>
